@@ -10,4 +10,6 @@ var record = () => {
   }else{
     document.getElementById("record-btn").style.color = "#ff0000";
   }
+
+  recording = !recording;
 }
