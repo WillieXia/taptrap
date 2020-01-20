@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import Tbl from './components/tbl.js';
-import Rcd_div from './components/rcd_div.js';
+import Tabl from './components/grid/tabl.js';
+import Recordplay_div from './components/recordplay-btn-div.js';
 import './style.css';
 
 class App extends Component {
@@ -11,12 +11,18 @@ class App extends Component {
       name: 'React'
     };
   }
+  
+  componentDidMount() {
+    const script = document.createElement("script");
+    script.src = "record.js";
+    document.body.appendChild(script);
+  }
 
   render() {
     return (
       <div id="ctn">
-        <Rcd_div />
-        <Tbl />
+        <Recordplay_div />
+        <Tabl />
       </div>
     );
   }
