@@ -6,9 +6,9 @@ var recording = false;
 
 var record = () => {
   if(recording){
-    document.getElementById("record-btn").style.color = "#000000";
+    document.getElementById("micicon").style.color = "#000000";
   }else{
-    document.getElementById("record-btn").style.color = "#ff0000";
+    document.getElementById("micicon").style.color = "#ff0000";
   }
 
   recording = !recording;
