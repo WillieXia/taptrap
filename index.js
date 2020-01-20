@@ -11,6 +11,12 @@ class App extends Component {
       name: 'React'
     };
   }
+  
+  componentDidMount() {
+    const script = document.createElement("script");
+    script.src = "record.js";
+    document.body.appendChild(script);
+  }
 
   render() {
     return (
