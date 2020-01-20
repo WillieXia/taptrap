@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import Tbl from './components/tbl.js';
 import Rcd_div from './components/rcd_div.js';
-import './style.css';
 
 class App extends Component {
   constructor() {
