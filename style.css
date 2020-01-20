@@ -2,7 +2,7 @@ button:focus {
   outline: 0px;
 }
 
-.btbtn {
+.beat-btn {
   border-radius: 8px;
   border-color: black;
   color:darkgray;
@@ -11,11 +11,11 @@ button:focus {
   height: 100%;
 }
 
-.tblcl {
+.table-col {
   height: 5vw;
 }
 
-.tblrw {
+.table-row {
   height: 15vw;
 }
 
@@ -23,25 +23,25 @@ button:focus {
   width: 100%;
 }
 
-#rcdbtn {
+#record-btn {
   width: 10vw;
   border-radius: 50% 0 0 50%;
   border: black 5%;
   height: 10vw;
 }
 
-#plybtn {
+#play-btn {
   width: 10vw;
   border-radius: 0 50% 50% 0;
   border: black 5%;
   height: 10vw;
 }
 
-#rcdbtn_ctn {
+#recordplay-btn-div {
   text-align: center;
   padding-bottom: 4%;
 }
 
-#ctn {
+#container {
   padding-top: 2%;
 }
