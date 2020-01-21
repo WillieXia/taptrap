@@ -12,9 +12,9 @@ export default class Record_btn extends Component {
 
   record = () => {
     if(this.recording){
-      this.color = "#000000";
+      document.getElementById("micicon").style.color = "#000000";
     }else{
-      this.color = "#ff0000";
+      document.getElementById("micicon").style.color = "#ff0000";
     }
 
     this.recording = !this.recording;
