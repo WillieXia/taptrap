@@ -1,6 +1,6 @@
 # taptrap
 
-##### Bill Ni, Gavi Zahavi
+##### Bill Ni, Starwarswii
 
 ### Installation + Run
 
