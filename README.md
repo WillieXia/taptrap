@@ -1,5 +1,7 @@
 # taptrap
 
+##### Bill Ni, Gavi Zahavi
+
 ### Installation + Run
 
 to run locally, [install node / npm](https://nodejs.org/en/)
