@@ -1,6 +1,7 @@
 # taptrap
 
-##### Bill Ni, Starwarswii
+##### Bill Ni,
+##### Starwarswii
 
 ### Installation + Run
 
