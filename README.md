@@ -1,5 +1,7 @@
 # taptrap
 
+### Installation + Run
+
 to run locally, [install node / npm](https://nodejs.org/en/)
 
 then, go into the root of the project, and run `npm install` to set up the dependencies
