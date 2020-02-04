@@ -16,25 +16,26 @@ button:focus {
 }
 
 .table-row {
-  height: 15vw;
+  height: 8vw;
 }
 
 #grid {
-  width: 100%;
+  padding-left: 20%;
+  width: 80%;
 }
 
 #record-btn {
-  width: 10vw;
+  width: 7vw;
   border-radius: 50% 0 0 50%;
   border: black 5%;
-  height: 10vw;
+  height: 7vw;
 }
 
 #play-btn {
-  width: 10vw;
+  width: 7vw;
   border-radius: 0 50% 50% 0;
   border: black 5%;
-  height: 10vw;
+  height: 7vw;
 }
 
 #recordplay-btn-div {
