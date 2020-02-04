@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Howl, Howler} from 'howler';
 
 export default class Record_btn extends Component {
   constructor() {
