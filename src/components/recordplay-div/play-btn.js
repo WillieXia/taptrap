@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Howl, Howler} from 'howler';
 
 export default class Play_btn extends Component {
   constructor() {
@@ -7,14 +8,19 @@ export default class Play_btn extends Component {
       name: 'React'
     };
 
-    this.playing = false;
+    this.sound = new Howl({
+      src: ['sound.mp3'],
+      loop: true
+    });
   }
 
   play = () => {
     if(this.playing){
       document.getElementById("playicon").style.color = "#000000";
+      this.sound.pause();
     }else{
       document.getElementById("playicon").style.color = "#00ff00";
+      this.sound.play();
     }
 
     this.playing = !this.playing;
