@@ -7,6 +7,8 @@ export default class Play_btn extends Component {
     this.state = {
       name: 'React'
     };
+    
+    this.playing = false;
 
     this.sound = new Howl({
       src: ['sound.mp3'],
