@@ -25,33 +25,21 @@ $(function() {
 		
 		for (var j = 0; j < gridWidth; j++) {
 			
-			var cell = $("<td/>");
-			
 			var button = $("<button></button>");
 			var id = i*gridHeight + j;
 			
 			
+			//we use this to make a closure, so each button has a different id value
+			//without this, all buttons would report the highest/last id
+			//doesn't need to be sitting inside this loop though, that's just
+			//where it is for now
 			function makeFunc(id) {
-				
 				return function(event) {handleGrid(event, id);};
 			}
 			
-			
-			//function(id) {return function(event) {handleGrid(event, id);}}(id);
-			
-			//(id => event => {handleGrid(event, id);})(id);
-			
-			
 			button.click(makeFunc(id));
 			
-			
-			//button.click(function() {handleGrid(id)});
-			
-			cell.html(button);
-			
-			row.append(cell);
-			
-			
+			row.append($("<td/>").html(button));
 			
 		}
 		
@@ -73,12 +61,8 @@ $(function() {
 	// });
 	
 	function handleRecord(event) {
-		if (recording) {
-			document.getElementById("micicon").style.color = "#000000";
-		} else {
-			document.getElementById("micicon").style.color = "#ff0000";
-		}
-
+		
+		$micIcon.css("color", recording ? "black" : "red");
 		recording = !recording;
 	}
 
@@ -92,20 +76,67 @@ $(function() {
 			});
 		}
 		
+		
 		if (playing) {
-			document.getElementById("playicon").style.color = "#000000";
 			sound.pause();
 		} else {
-			document.getElementById("playicon").style.color = "#00ff00";
 			sound.play();
 		}
-
+		
+		$playIcon.css("color", playing ? "black" : "lime");
+		
 		playing = !playing;
 	}
 	
 	
 	$("#record-btn").click(handleRecord);
 	$("#play-btn").click(handlePlay);
+	
+	
+	$("#fileInput").on("change", function(event) {
+		
+		console.log("file event fired")
+		
+		if (event.target.files.length == 0) {
+			return;
+		}
+		
+		// Read the file from the input
+		var file = event.target.files[0];
+		var reader = new FileReader();
+		
+		console.log("reader");
+		
+		reader.addEventListener("load", function() {
+			console.log("in event listener");
+			var data = reader.result;
+			
+			//console.log("data")
+			//console.log(data)
+			
+			// Create a Howler sound
+			var sound = new Howl({
+				src: data,
+				// always give file extension: this is optional but helps
+				format: file.name.split(".").pop().toLowerCase(),
+				
+				onend: function() {
+					//clean out input. this doesn't retrigger the event listener
+					$("#fileInput").val("");
+					this.unload();
+					console.log("done. unloaded");
+				}
+			});
+			
+			
+			console.log('playing');
+			sound.play();
+		});
+		
+		console.log('reading');
+		reader.readAsDataURL(file);
+		
+	});
 	
 	
 	console.log("ready");
