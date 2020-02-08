@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+	<head>
+		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.3/howler.min.js"></script>
+		
+		<!-- <link href="../src/style-new.css" rel="stylesheet"> -->
+		<!-- <script src="../src/index-new.js"></script> -->
+		
+		<link href="style-new.css" rel="stylesheet">
+		<script src="index-new.js"></script>
+	</head>
+
+	<body>
+	
+		<script type="text/javascript">
+		console.log("hello");
+		window.doit = function(event) {
+			// Read the file from the input
+			if (event.files.length > 0) {
+				var file = event.files[0];
+				var reader = new FileReader();
+			console.log("reader");
+				reader.addEventListener('load', function() {
+				console.log("in event listener");
+					var data = reader.result;
+				//console.log("data")
+				//console.log(data)
+					// Create a Howler sound
+					var sound = new Howl({
+						src: data,
+						format: file.name.split('.').pop().toLowerCase() // always give file extension: this is optional but helps
+					});
+				console.log('playing');
+				sound.play();
+				});
+			console.log('reading');
+				reader.readAsDataURL(file);
+			}
+		};
+		</script>
+
+		<div id="root">
+			<div id="ctn">
+			
+				<div id="recordplay-btn-div">
+					<button id="record-btn"><i id="micicon" class="fa fa-microphone"></i></button>
+					<button id="play-btn"><i id="playicon" class="fa fa-play"></i></button>
+				</div>
+				
+				<!-- filled by jquery -->
+				<table id="grid" />
+				
+			</div>
+		</div>
+
+		<input type="file" onChange="doit(this)" oninput="doit">
+
+	</body>
+</html>
+
+<!--
+<tr className="table-row">
+  <td className="table-col">
+    <Beat_btn />
+  </td>
+
+  <td className="table-col">
+    <Beat_btn />
+  </td>
+
+  <td className="table-col">
+    <Beat_btn />
+  </td>
+
+  <td className="table-col">
+    <Beat_btn />
+  </td>
+
+  <td className="table-col">
+    <button className="beat-btn" onClick={this.trigger}></button>
+  </td>
+</tr>;
+-->
