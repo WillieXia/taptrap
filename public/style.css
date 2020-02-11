@@ -2,7 +2,7 @@ button:focus {
   outline: 0px;
 }
 
-.beat-btn {
+#grid button {
   border-radius: 8px;
   border-color: black;
   color:darkgray;
@@ -11,30 +11,31 @@ button:focus {
   height: 100%;
 }
 
-.table-col {
+#grid td {
   height: 5vw;
 }
 
-.table-row {
-  height: 15vw;
+#grid tr {
+  height: 8vw;
 }
 
 #grid {
-  width: 100%;
+  padding-left: 20%;
+  width: 80%;
 }
 
 #record-btn {
-  width: 10vw;
+  width: 7vw;
   border-radius: 50% 0 0 50%;
   border: black 5%;
-  height: 10vw;
+  height: 7vw;
 }
 
 #play-btn {
-  width: 10vw;
+  width: 7vw;
   border-radius: 0 50% 50% 0;
   border: black 5%;
-  height: 10vw;
+  height: 7vw;
 }
 
 #recordplay-btn-div {
@@ -44,4 +45,8 @@ button:focus {
 
 #container {
   padding-top: 2%;
+}
+
+.red {
+  background-color: red;
 }
