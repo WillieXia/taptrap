@@ -23,13 +23,13 @@ $(function() {
 		
 	}
 
-	function changeMode(event, id){
+	function changeMode(event, id) {
 
 		var t = event.target.innerHTML;
 
-		if(t == "Cut"){
+		if(t == "Cut") {
 			t = "Overlap";
-		}else if(t == "Overlap"){
+		}else if(t == "Overlap") {
 			t = "Loop";
 		}else{
 			t = "Cut";
@@ -38,9 +38,17 @@ $(function() {
 		event.target.innerHTML = t;
 	}
 
-	function changeButton(event, id){
-		if(event.target.className !== "red"){
+	function waitKey(event, id, t){
+		t.innerHTML = String.fromCharCode(event.keycode);
+		t.removeEventListener("onkeypress", waitKey);
+	}
 
+	function changeKey(event, id) {
+		if(event.target.className.includes("red")) {
+			var t = event.target;
+			t.addEventListener("onkeypress", function(event) {
+				
+			});
 		}
 
 		$(event.target).toggleClass("red");
@@ -58,6 +66,8 @@ $(function() {
 			var id = i*gridHeight + j;
 
 			var md_button = $("<button class='mdbtn'>Cut</button>");
+
+			var key_button = $("<button class='mdbtn keybtn'></button>");
 			
 			
 			//we use this to make a closure, so each button has a different id value
@@ -76,7 +86,14 @@ $(function() {
 
 			md_button.click(md_func(id));
 
+			function key_func(id){
+				return function(event) {changeKey(event, id);};
+			}
+
+			key_button.click(key_func(id));
+
 			button.append(md_button);
+			button.append(key_button);
 			row.append($("<td/>").html(button));
 			
 		}

@@ -24,6 +24,10 @@ button:focus {
   bottom: 0;
 }
 
+.keybtn{
+  right: 0;
+}
+
 #grid td {
   height: 5vw;
 }
