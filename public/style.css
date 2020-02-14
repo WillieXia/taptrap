@@ -2,13 +2,18 @@ button:focus {
   outline: 0px;
 }
 
-#grid button {
+.btbtn{
   border-radius: 8px;
   border-color: black;
   color:darkgray;
 
   width: 100%;
   height: 100%;
+}
+
+.mdbtn{
+  margin-top: auto;
+  margin-bottom: 0px
 }
 
 #grid td {

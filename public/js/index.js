@@ -16,6 +16,21 @@ $(function() {
 		$(event.target).toggleClass("red");
 		
 	}
+
+	function changeMode(event, id){
+
+		var t = event.target.innerHTML;
+
+		if(t == "Cut"){
+			t = "Overlap";
+		}else if(t == "Overlap"){
+			t = "Loop";
+		}else{
+			t = "Cut";
+		}
+
+		event.target.innerHTML = t;
+	}
 	
 	
 	//TODO could change table to css grid?
@@ -25,8 +40,10 @@ $(function() {
 		
 		for (var j = 0; j < gridWidth; j++) {
 			
-			var button = $("<button></button>");
+			var button = $("<button class='btbtn' />");
 			var id = i*gridHeight + j;
+
+			var md_button = $("<button class='mdbtn'>Cut</button>");
 			
 			
 			//we use this to make a closure, so each button has a different id value
@@ -38,8 +55,16 @@ $(function() {
 			}
 			
 			button.click(makeFunc(id));
-			
-			row.append($("<td/>").html(button));
+
+			function md_func(id){
+				return function(event) {changeMode(event, id);};
+			}
+
+			md_button.click(md_func(id));
+
+			row.append(button);
+			row.append(md_button);
+			row.append($("<td/>"));
 			
 		}
 		
