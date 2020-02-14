@@ -10,9 +10,15 @@ $(function() {
 	
 	//id is 0 to width*height
 	function handleGrid(event, id) {
+		console.log(event.target.tagName);
+
+		if(event.target.tagName !== "DIV"){
+			return;
+		}
+
 		console.log("clicked on cell", id);
 		console.log(event);
-		
+
 		$(event.target).toggleClass("red");
 		
 	}
@@ -31,6 +37,14 @@ $(function() {
 
 		event.target.innerHTML = t;
 	}
+
+	function changeButton(event, id){
+		if(event.target.className !== "red"){
+
+		}
+
+		$(event.target).toggleClass("red");
+	}
 	
 	
 	//TODO could change table to css grid?
@@ -40,7 +54,7 @@ $(function() {
 		
 		for (var j = 0; j < gridWidth; j++) {
 			
-			var button = $("<button class='btbtn' />");
+			var button = $("<div class='btbtn'></div>");
 			var id = i*gridHeight + j;
 
 			var md_button = $("<button class='mdbtn'>Cut</button>");
@@ -62,9 +76,8 @@ $(function() {
 
 			md_button.click(md_func(id));
 
-			row.append(button);
-			row.append(md_button);
-			row.append($("<td/>"));
+			button.append(md_button);
+			row.append($("<td/>").html(button));
 			
 		}
 		

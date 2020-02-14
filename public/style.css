@@ -3,8 +3,11 @@ button:focus {
 }
 
 .btbtn{
+  position: relative;
+  border-style: solid;
   border-radius: 8px;
   border-color: black;
+  border-width: 1px;
   color:darkgray;
 
   width: 100%;
@@ -13,7 +16,12 @@ button:focus {
 
 .mdbtn{
   margin-top: auto;
-  margin-bottom: 0px
+  margin-bottom: 0px;
+
+  vertical-align: bottom;
+
+  position: absolute;
+  bottom: 0;
 }
 
 #grid td {
