@@ -27,11 +27,11 @@ $(function() {
 
 		var t = event.target.innerHTML;
 
-		if(t == "Cut") {
+		if (t == "Cut") {
 			t = "Overlap";
-		}else if(t == "Overlap") {
+		} else if (t == "Overlap") {
 			t = "Loop";
-		}else{
+		} else {
 			t = "Cut";
 		}
 
@@ -44,7 +44,7 @@ $(function() {
 	}
 
 	function changeKey(event, id) {
-		if(event.target.className.includes("red")) {
+		if (event.target.className.includes("red")) {
 			var t = event.target;
 			t.addEventListener("onkeypress", function(event) {
 				
@@ -122,7 +122,7 @@ $(function() {
 	}
 
 	function handlePlay(event) {
-		if (sound == null){
+		if (sound == null) {
 			//put here for now, as chrome complains about trying to use webaudio
 			//without user input
 			sound = new Howl({
