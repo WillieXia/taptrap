@@ -1,105 +1,137 @@
+import Cell from "./cell.js";
+
+//called on page load
 $(function() {
 	
 	
+	//map from cell id to cell object
+	//TODO this and other state stuff should probably go in an object
+	var cells = []
 	
+	//the id of which cell is waiting for a key
+	var waitingOnKey = null;
+	
+	// var c = new Cell(500, 123);
+	// c.test();
+	// c.switchMode();
 	
 	var $grid = $("#grid");
 	
 	var gridWidth = 5;
 	var gridHeight = 5;
 	
-	//id is 0 to width*height
+	//id is 0 to width*height-1
 	function handleGrid(event, id) {
-		console.log(event.target.tagName);
+		
+		var target = $(event.target);
 
-		if(event.target.tagName !== "DIV"){
+		if(!target.hasClass("btbtn")){
 			return;
 		}
 
 		console.log("clicked on cell", id);
 		console.log(event);
 
-		$(event.target).toggleClass("red");
+		target.toggleClass("red");
+		
+		if (id == 0) {
+			cells[id].audio.play();
+		}
 		
 	}
 
 	function changeMode(event, id) {
-
-		var t = event.target.innerHTML;
-
-		if (t == "Cut") {
-			t = "Overlap";
-		} else if (t == "Overlap") {
-			t = "Loop";
-		} else {
-			t = "Cut";
-		}
-
-		event.target.innerHTML = t;
+		
+		var target = $(event.target);
+		var cell = cells[id];
+		
+		//switches to the next mode, and returns the mode
+		var mode = cell.nextMode();
+		
+		//TODO this manipulation could be done by the Cell object itself
+		target.text(mode);
 	}
 
+	//TODO later
+	/*
 	function waitKey(event, id, t){
 		t.innerHTML = String.fromCharCode(event.keycode);
 		t.removeEventListener("onkeypress", waitKey);
 	}
 
 	function changeKey(event, id) {
-		if (event.target.className.includes("red")) {
+		
+		
+		
+		if (target.hasClass("red")) {
+			return; //already clicked
+		}
+		
+		console.log("changekey:", event, id);
+		
+		var target = $(event.target);
+		
+		target.addClass("red");
+		
+		if (target.hasClass("red")) {
 			var t = event.target;
 			t.addEventListener("onkeypress", function(event) {
 				
 			});
 		}
 
-		$(event.target).toggleClass("red");
+		
 	}
+	*/
+	
+	
+	
+	
+	//we use this to make a closure, so each cell has a different id value
+	//without this, all cells would report the same (highest/last) id
+	function eventWithId(func, id) {
+		return function(event) {func(event, id);};
+	}
+			
+	
 	
 	
 	//TODO could change table to css grid?
 	
+	
+	//create the grid
 	for (var i = 0; i < gridHeight; i++) {
 		var row = $("<tr/>");
 		
 		for (var j = 0; j < gridWidth; j++) {
 			
-			var button = $("<div class='btbtn'></div>");
 			var id = i*gridHeight + j;
+			
+			var cell = $("<div class='btbtn'></div>");
+			cell.click(eventWithId(handleGrid, id));
+			
+			//append to array
+			//this makes the new Cell object have a jquery "pointer" to the element in the dom
+			cells.push(new Cell(id, cell));
+			
 
 			var md_button = $("<button class='mdbtn'>Cut</button>");
-
-			var key_button = $("<button class='mdbtn keybtn'></button>");
+			md_button.click(eventWithId(changeMode, id));
 			
+			var key_button = $("<button class='mdbtn keybtn'>&nbsp;</button>");
+			//key_button.click(eventWithId(changeKey, id));
 			
-			//we use this to make a closure, so each button has a different id value
-			//without this, all buttons would report the highest/last id
-			//doesn't need to be sitting inside this loop though, that's just
-			//where it is for now
-			function makeFunc(id) {
-				return function(event) {handleGrid(event, id);};
-			}
-			
-			button.click(makeFunc(id));
 
-			function md_func(id){
-				return function(event) {changeMode(event, id);};
-			}
-
-			md_button.click(md_func(id));
-
-			function key_func(id){
-				return function(event) {changeKey(event, id);};
-			}
-
-			key_button.click(key_func(id));
-
-			button.append(md_button);
-			button.append(key_button);
-			row.append($("<td/>").html(button));
+			cell.append(md_button, key_button);
+			row.append($("<td/>").html(cell));
 			
 		}
 		
 		$grid.append(row);
 	}
+	
+	//for testing, TODO remove
+	//window.cells = cells;
 	
 	
 	var $micIcon = $("#micIcon");
@@ -170,22 +202,29 @@ $(function() {
 			//console.log(data)
 			
 			// Create a Howler sound
+			// var sound = new Howl({
+				// src: data,
+				// // always give file extension: this is optional but helps
+				// format: file.name.split(".").pop().toLowerCase(),
+				
+				// onend: function() {
+					// //clean out input. this doesn't retrigger the event listener
+					// $("#fileInput").val("");
+					// this.unload();
+					// console.log("done. unloaded");
+				// }
+			// });
+			
 			var sound = new Howl({
 				src: data,
 				// always give file extension: this is optional but helps
-				format: file.name.split(".").pop().toLowerCase(),
-				
-				onend: function() {
-					//clean out input. this doesn't retrigger the event listener
-					$("#fileInput").val("");
-					this.unload();
-					console.log("done. unloaded");
-				}
+				format: file.name.split(".").pop().toLowerCase()
 			});
 			
+			cells[0].audio = sound;
 			
-			console.log('playing');
-			sound.play();
+			// console.log('playing');
+			// sound.play();
 		});
 		
 		console.log('reading');
