@@ -199,13 +199,16 @@ $(function() {
 				console.log(String.fromCharCode(e.code));
 				keyPressButtons[i].innerHTML = e.key;
 				keyPressButtons[i].classList.remove("red");
-				keyDict[e.code] = keyPressButtons[i].parentElement;
+				if(e.code in keyDict){
+					keyDict[e.code].innerHTML = "";
+				}
+				keyDict[e.code] = keyPressButtons[i];
 				b = true;
 			}
 		}
 
 		if(!b && e.code in keyDict){
-			keyDict[e.code].click();
+			keyDict[e.code].parentElement.click();
 		}
 	}
 
