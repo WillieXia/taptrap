@@ -1,8 +1,6 @@
 $(function() {
 	
 	
-	
-	
 	var $grid = $("#grid");
 	
 	var gridWidth = 5;
@@ -38,22 +36,19 @@ $(function() {
 		event.target.innerHTML = t;
 	}
 
-	function waitKey(event, id, t){
-		t.innerHTML = String.fromCharCode(event.keycode);
-		t.removeEventListener("onkeypress", waitKey);
-	}
-
-	function changeKey(event, id) {
-		if(event.target.className.includes("red")) {
-			var t = event.target;
-			t.addEventListener("onkeypress", function(event) {
-				
-			});
+	function stopButtonWait(targetBtnID){
+		for(var i = 0; i < gridHeight * gridWidth; i++){
+			console.log(keyPressButtons[i].className);
+			if(keyPressButtons[i].className.includes("red") && keyPressButtons[i].id !== targetBtnID){
+				keyPressButtons[i].classList.remove("red");
+			}
 		}
-
-		$(event.target).toggleClass("red");
 	}
-	
+
+	function toggleKeyButton(event){
+		$(event.target).toggleClass("red");
+		stopButtonWait(event.target.id);
+	}
 	
 	//TODO could change table to css grid?
 	
@@ -67,7 +62,7 @@ $(function() {
 
 			var md_button = $("<button class='mdbtn'>Cut</button>");
 
-			var key_button = $("<button class='mdbtn keybtn'></button>");
+			var key_button = $("<button id='" + (i * gridWidth + j) + "' class='mdbtn keybtn'></button>");
 			
 			
 			//we use this to make a closure, so each button has a different id value
@@ -86,11 +81,11 @@ $(function() {
 
 			md_button.click(md_func(id));
 
-			function key_func(id){
-				return function(event) {changeKey(event, id);};
+			function keybtn_func(){
+				return function(event) {toggleKeyButton(event);};
 			}
 
-			key_button.click(key_func(id));
+			key_button.click(keybtn_func());
 
 			button.append(md_button);
 			button.append(key_button);
@@ -100,7 +95,10 @@ $(function() {
 		
 		$grid.append(row);
 	}
-	
+
+
+	var keyPressButtons = document.getElementsByClassName("keybtn");
+	var keyDict = {};
 	
 	var $micIcon = $("#micIcon");
 	var $playIcon = $("#playIcon");
@@ -192,7 +190,27 @@ $(function() {
 		reader.readAsDataURL(file);
 		
 	});
-	
+
+	function handleKeyP(e){
+		var b = false;
+
+		for(var i = 0; i < gridHeight * gridWidth; i++){
+			if(keyPressButtons[i].className.includes("red")){
+				console.log(String.fromCharCode(e.code));
+				keyPressButtons[i].innerHTML = e.key;
+				keyPressButtons[i].classList.remove("red");
+				keyDict[e.code] = keyPressButtons[i].parentElement;
+				b = true;
+			}
+		}
+
+		if(!b && e.code in keyDict){
+			keyDict[e.code].click();
+		}
+	}
+
+	const keyQuery = document.querySelector('html');
+	keyQuery.onkeydown = handleKeyP;
 	
 	console.log("ready");
 });
