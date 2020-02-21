@@ -31,7 +31,9 @@ export default class Cell {
 		
 		this.mode = modes.CUT;
 		
-		this.key = null;
+		this.hotkey = null;
+		
+		//TODO
 		this.audio = null;
 		
 		//TODO does this need to hold more things?
