@@ -19,6 +19,10 @@ $(function() {
 	
 	var gridWidth = 5;
 	var gridHeight = 5;
+
+	
+	var keyPressButtons = document.getElementsByClassName("keybtn");
+	var keyDict = {};
 	
 	//id is 0 to width*height-1
 	function handleGrid(event, id) {
@@ -110,12 +114,6 @@ $(function() {
 		
 		$grid.append(row);
 	}
-	
-	//for testing, TODO remove
-	//window.cells = cells;
-	
-	var keyPressButtons = document.getElementsByClassName("keybtn");
-	var keyDict = {};
 	
 	
 	
