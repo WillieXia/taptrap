@@ -4,7 +4,7 @@ import Cell from "./cell.js";
 $(function() {
 	
 	
-	//map from cell id to cell object
+	//map (array) from cell id to cell object
 	//TODO this and other state stuff should probably go in an object
 	var cells = []
 	
@@ -24,6 +24,7 @@ $(function() {
 	var keyPressButtons = document.getElementsByClassName("keybtn");
 	var keyDict = {};
 	
+	//called when a cell is clicked
 	//id is 0 to width*height-1
 	function handleGrid(event, id) {
 		
@@ -44,22 +45,16 @@ $(function() {
 		
 	}
 
+	//called when a mode button is clicked on
 	function changeMode(event, id) {
 		
+		//TODO target is unused.
+		//in general, it might make sense to put 3 functions in the
+		//celll object and have it handle the three clicks
 		var target = $(event.target);
 		var cell = cells[id];
 		
-		//switches to the next mode, and returns the mode
-		var mode = cell.nextMode();
-		
-		//TODO this manipulation could be done by the Cell object itself
-		target.text(mode);
-	}
-	
-	//we use this to make a closure, so each cell has a different id value
-	//without this, all cells would report the same (highest/last) id
-	function eventWithId(func, id) {
-		return function(event) {func(event, id);};
+		cell.cycleMode();
 	}
 			
 	
@@ -75,9 +70,26 @@ $(function() {
 		}
 	}
 	
+	//called when a key-assign button is clicked
 	function toggleKeyButton(event, id) {
+		
+		if (waitingOnKey != null) {
+			var waitingOnCell = cells[waitingOnKey];
+			//TODO continue
+		}
+		
+		var target = $(event.target);
+		var cell = cells[id];
+		
 		$(event.target).toggleClass("red");
 		stopButtonWait(event.target.id);
+	}
+	
+	//calls a function with an event and id
+	//we use this to make a closure, so each cell has a different id value
+	//without this, all cells would report the same (highest/last) id
+	function eventWithId(func, id) {
+		return function(event) {func(event, id);};
 	}
 	
 	
@@ -86,6 +98,7 @@ $(function() {
 	
 	//create the grid
 	for (var i = 0; i < gridHeight; i++) {
+		
 		var row = $("<tr/>");
 		
 		for (var j = 0; j < gridWidth; j++) {
@@ -95,10 +108,6 @@ $(function() {
 			var cell = $("<div class='btbtn'></div>");
 			cell.click(eventWithId(handleGrid, id));
 			
-			//append to array
-			//this makes the new Cell object have a jquery "pointer" to the element in the dom
-			cells.push(new Cell(id, cell));
-			
 
 			var md_button = $("<button class='mdbtn'>Cut</button>");
 			md_button.click(eventWithId(changeMode, id));
@@ -106,6 +115,10 @@ $(function() {
 			var key_button = $("<button id='"+id+"' class='mdbtn keybtn'>&nbsp;</button>");
 			key_button.click(eventWithId(toggleKeyButton, id));
 			
+			
+			//append to array
+			//this makes the new Cell object have jquery "pointers" to the elements in the dom
+			cells.push(new Cell(id, cell, md_button, key_button));
 
 			cell.append(md_button, key_button);
 			row.append($("<td/>").html(cell));

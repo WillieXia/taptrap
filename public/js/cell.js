@@ -4,11 +4,30 @@ const modes = {
 	LOOP: "Loop"
 };
 
+function nextMode(mode) {
+		
+	switch (mode) {
+		case modes.CUT:
+			return modes.OVERLAP;
+			
+		case modes.OVERLAP:
+			return modes.LOOP;
+			
+		case modes.LOOP:
+			return modes.CUT;
+	}
+}
+
 export default class Cell {
 
-	constructor(id, obj) {
+	//id is the the cell id
+	//the three buttons are "pointers" to jquery objects in the dom
+	constructor(id, cellButton, modeButton, keyButton) {
 		this.id = id;
-		this.obj = obj;
+		
+		this.cellButton = cellButton;
+		this.modeButton = modeButton;
+		this.keyButton = keyButton;
 		
 		this.mode = modes.CUT;
 		
@@ -24,31 +43,13 @@ export default class Cell {
 		console.log("this is a cell with id", this.id);
 	}
 	
-	nextMode() {
-		switch (this.mode) {
-			case modes.CUT:
-				this.mode = modes.OVERLAP;
-				break;
-				
-			case modes.OVERLAP:
-				this.mode = modes.LOOP;
-				break;
-				
-			case modes.LOOP:
-				this.mode = modes.CUT;
-				break;
-		}
-		
-		return this.mode;
+	setMode(mode) {
+		this.mode = mode;
+		this.modeButton.text(mode);
 	}
 	
-	//TODO remove. for testing
-	switchMode() {
-		console.log("old mode", this.mode);
-		this.nextMode();
-		console.log("new mode", this.mode);
+	//changes to the next mode
+	cycleMode() {
+		this.setMode(nextMode(this.mode));
 	}
-	
 }
-
-Cell.modes = modes;
