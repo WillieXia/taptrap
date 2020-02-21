@@ -25,7 +25,7 @@ $(function() {
 		
 		var target = $(event.target);
 
-		if(!target.hasClass("btbtn")){
+		if (!target.hasClass("btbtn")) {
 			return;
 		}
 
@@ -51,41 +51,6 @@ $(function() {
 		//TODO this manipulation could be done by the Cell object itself
 		target.text(mode);
 	}
-
-	//TODO later
-	/*
-	function waitKey(event, id, t){
-		t.innerHTML = String.fromCharCode(event.keycode);
-		t.removeEventListener("onkeypress", waitKey);
-	}
-
-	function changeKey(event, id) {
-		
-		
-		
-		if (target.hasClass("red")) {
-			return; //already clicked
-		}
-		
-		console.log("changekey:", event, id);
-		
-		var target = $(event.target);
-		
-		target.addClass("red");
-		
-		if (target.hasClass("red")) {
-			var t = event.target;
-			t.addEventListener("onkeypress", function(event) {
-				
-			});
-		}
-
-		
-	}
-	*/
-	
-	
-	
 	
 	//we use this to make a closure, so each cell has a different id value
 	//without this, all cells would report the same (highest/last) id
@@ -96,8 +61,24 @@ $(function() {
 	
 	
 	
-	//TODO could change table to css grid?
+	function stopButtonWait(targetBtnID) {
+		for (var i = 0; i < gridHeight * gridWidth; i++) {
+			console.log(keyPressButtons[i].className);
+			
+			if (keyPressButtons[i].className.includes("red") && keyPressButtons[i].id !== targetBtnID) {
+				keyPressButtons[i].classList.remove("red");
+			}
+		}
+	}
 	
+	function toggleKeyButton(event, id) {
+		$(event.target).toggleClass("red");
+		stopButtonWait(event.target.id);
+	}
+	
+	
+	
+	//TODO could change table to css grid?
 	
 	//create the grid
 	for (var i = 0; i < gridHeight; i++) {
@@ -118,8 +99,8 @@ $(function() {
 			var md_button = $("<button class='mdbtn'>Cut</button>");
 			md_button.click(eventWithId(changeMode, id));
 			
-			var key_button = $("<button class='mdbtn keybtn'>&nbsp;</button>");
-			//key_button.click(eventWithId(changeKey, id));
+			var key_button = $("<button id='"+id+"' class='mdbtn keybtn'>&nbsp;</button>");
+			key_button.click(eventWithId(toggleKeyButton, id));
 			
 
 			cell.append(md_button, key_button);
@@ -132,6 +113,10 @@ $(function() {
 	
 	//for testing, TODO remove
 	//window.cells = cells;
+	
+	var keyPressButtons = document.getElementsByClassName("keybtn");
+	var keyDict = {};
+	
 	
 	
 	var $micIcon = $("#micIcon");
@@ -198,23 +183,6 @@ $(function() {
 			console.log("in event listener");
 			var data = reader.result;
 			
-			//console.log("data")
-			//console.log(data)
-			
-			// Create a Howler sound
-			// var sound = new Howl({
-				// src: data,
-				// // always give file extension: this is optional but helps
-				// format: file.name.split(".").pop().toLowerCase(),
-				
-				// onend: function() {
-					// //clean out input. this doesn't retrigger the event listener
-					// $("#fileInput").val("");
-					// this.unload();
-					// console.log("done. unloaded");
-				// }
-			// });
-			
 			var sound = new Howl({
 				src: data,
 				// always give file extension: this is optional but helps
@@ -231,6 +199,35 @@ $(function() {
 		reader.readAsDataURL(file);
 		
 	});
+	
+	function handleKeyP(e) {
+		var b = false;
+
+		for (var i = 0; i < gridHeight*gridWidth; i++) {
+			
+			if (keyPressButtons[i].className.includes("red")) {
+				
+				console.log(String.fromCharCode(e.code));
+				
+				keyPressButtons[i].innerHTML = e.key;
+				
+				//TODO figure out how to prevent binding multiple keys to same cell
+				keyPressButtons[i].classList.remove("red");
+				if (e.code in keyDict) {
+					keyDict[e.code].innerHTML = "&nbsp;";
+				}
+				keyDict[e.code] = keyPressButtons[i];
+				b = true;
+			}
+		}
+
+		if (!b && e.code in keyDict) {
+			keyDict[e.code].parentElement.click();
+		}
+	}
+
+	const keyQuery = document.querySelector('html');
+	keyQuery.onkeydown = handleKeyP;
 	
 	
 	console.log("ready");
