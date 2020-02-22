@@ -39,12 +39,6 @@ export default class Cell {
 		//TODO does this need to hold more things?
 	}
 	
-	
-	test() {
-		//"this" is required to access id
-		console.log("this is a cell with id", this.id);
-	}
-	
 	setMode(mode) {
 		this.mode = mode;
 		this.modeButton.text(mode);
@@ -53,5 +47,34 @@ export default class Cell {
 	//changes to the next mode
 	cycleMode() {
 		this.setMode(nextMode(this.mode));
+	}
+	
+	hasHotkey() {
+		return this.hotkey !== null;
+	}
+	
+	setHotkey(key) {
+		this.hotkey = key;
+		this.keyButton.text(key);
+	}
+	
+	clearHotkey() {
+		this.hotkey = null;
+		this.keyButton.html("&nbsp;");
+	}
+	
+	//will be called when the cell is clicked on
+	//"performs" its action
+	run() {
+		//TODO should be fleshed out later
+		//this is just a basic example
+		
+		console.log("clicked on cell", this.id);
+
+		this.cellButton.toggleClass("red");
+		
+		if (this.audio !== null) {
+			this.audio.play();
+		}
 	}
 }
