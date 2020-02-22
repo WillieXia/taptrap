@@ -2,7 +2,9 @@ button:focus {
   outline: 0px;
 }
 
-.btbtn{
+/* TODO use better class names */
+
+.btbtn {
   position: relative;
   border-style: solid;
   border-radius: 8px;
@@ -14,7 +16,7 @@ button:focus {
   height: 100%;
 }
 
-.mdbtn{
+.mdbtn {
   margin-top: auto;
   margin-bottom: 0px;
 
@@ -24,7 +26,7 @@ button:focus {
   bottom: 0;
 }
 
-.keybtn{
+.keybtn {
   right: 0;
 }
 

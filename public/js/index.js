@@ -1,107 +1,117 @@
+import Cell from "./cell.js";
+
+//dimensions of the cell grid
+const GRID_WIDTH = 5;
+const GRID_HEIGHT = 5;
+
+//called on page load
 $(function() {
 	
 	
-	var $grid = $("#grid");
+	//map (array) from cell id to cell object
+	//TODO this and other state stuff should probably go in an object
+	var cells = []
 	
-	var gridWidth = 5;
-	var gridHeight = 5;
+	//a pointer to the cell currently waiting for a hotkey key,
+	//or null if no cell is waiting
+	var waitingCell = null;
 	
-	//id is 0 to width*height
+	//dictionary from keyboard key to cell object
+	var hotkeys = {};
+	
+	//called when a cell is clicked
 	function handleGrid(event, id) {
-		console.log(event.target.tagName);
+		
+		var target = $(event.target);
 
-		if(event.target.tagName !== "DIV"){
+		//for whatever reason, clicking on buttons inside the cell
+		//also triggers this cell click handler
+		//so we only do stuff if we're clicking on the cell itself
+		if (!target.hasClass("btbtn")) {
 			return;
 		}
-
-		console.log("clicked on cell", id);
+		
 		console.log(event);
-
-		$(event.target).toggleClass("red");
+		
+		cells[id].run();
 		
 	}
 
+	//called when a mode button is clicked on
 	function changeMode(event, id) {
-
-		var t = event.target.innerHTML;
-
-		if(t == "Cut") {
-			t = "Overlap";
-		}else if(t == "Overlap") {
-			t = "Loop";
-		}else{
-			t = "Cut";
+		
+		//TODO event is unused.
+		//in general, it might make sense to put 3 functions in the
+		//cell object and have it handle the three clicks
+		var cell = cells[id];
+		
+		cell.cycleMode();
+	}
+			
+	
+	//called when a key-assign button is clicked
+	function toggleKeyButton(event, id) {
+		
+		if (waitingCell !== null) {
+			//TODO probably better way to do this
+			waitingCell.keyButton.removeClass("red");
 		}
-
-		event.target.innerHTML = t;
+		
+		var cell = cells[id];
+		
+		cell.keyButton.addClass("red");
+		waitingCell = cell;
 	}
-
-	function stopButtonWait(targetBtnID){
-		for(var i = 0; i < gridHeight * gridWidth; i++){
-			console.log(keyPressButtons[i].className);
-			if(keyPressButtons[i].className.includes("red") && keyPressButtons[i].id !== targetBtnID){
-				keyPressButtons[i].classList.remove("red");
-			}
-		}
+	
+	//calls a function with an event and id
+	//we use this to make a closure, so each cell has a different id value
+	//without this, all cells would report the same (highest/last) id
+	function eventWithId(func, id) {
+		return function(event) {func(event, id);};
 	}
-
-	function toggleKeyButton(event){
-		$(event.target).toggleClass("red");
-		stopButtonWait(event.target.id);
-	}
+	
+	
 	
 	//TODO could change table to css grid?
 	
-	for (var i = 0; i < gridHeight; i++) {
+	//create the grid
+	var grid = $("#grid");
+	for (var i = 0; i < GRID_HEIGHT; i++) {
+		
 		var row = $("<tr/>");
 		
-		for (var j = 0; j < gridWidth; j++) {
+		for (var j = 0; j < GRID_WIDTH; j++) {
 			
-			var button = $("<div class='btbtn'></div>");
-			var id = i*gridHeight + j;
+			//id is 0 to width*height-1
+			var id = i*GRID_HEIGHT + j;
+			
+			var cell = $("<div class='btbtn'></div>");
+			cell.click(eventWithId(handleGrid, id));
+			
 
 			var md_button = $("<button class='mdbtn'>Cut</button>");
-
-			var key_button = $("<button id='" + (i * gridWidth + j) + "' class='mdbtn keybtn'></button>");
+			md_button.click(eventWithId(changeMode, id));
+			
+			var key_button = $("<button id='"+id+"' class='mdbtn keybtn'>&nbsp;</button>");
+			key_button.click(eventWithId(toggleKeyButton, id));
 			
 			
-			//we use this to make a closure, so each button has a different id value
-			//without this, all buttons would report the highest/last id
-			//doesn't need to be sitting inside this loop though, that's just
-			//where it is for now
-			function makeFunc(id) {
-				return function(event) {handleGrid(event, id);};
-			}
-			
-			button.click(makeFunc(id));
+			//append to array
+			//this makes the new Cell object have jquery "pointers" to the elements in the dom
+			cells.push(new Cell(id, cell, md_button, key_button));
 
-			function md_func(id){
-				return function(event) {changeMode(event, id);};
-			}
-
-			md_button.click(md_func(id));
-
-			function keybtn_func(){
-				return function(event) {toggleKeyButton(event);};
-			}
-
-			key_button.click(keybtn_func());
-
-			button.append(md_button);
-			button.append(key_button);
-			row.append($("<td/>").html(button));
+			cell.append(md_button, key_button);
+			row.append($("<td/>").html(cell));
 			
 		}
 		
-		$grid.append(row);
+		grid.append(row);
 	}
-
-
-	var keyPressButtons = document.getElementsByClassName("keybtn");
-	var keyDict = {};
 	
-	var $micIcon = $("#micIcon");
-	var $playIcon = $("#playIcon");
+	
+	
+	var micIcon = $("#micIcon");
+	var playIcon = $("#playIcon");
 	
 	var recording = false;
 	var playing = false;
@@ -115,12 +125,12 @@ $(function() {
 	
 	function handleRecord(event) {
 		
-		$micIcon.css("color", recording ? "black" : "red");
+		micIcon.css("color", recording ? "black" : "red");
 		recording = !recording;
 	}
 
 	function handlePlay(event) {
-		if (sound == null){
+		if (sound === null) {
 			//put here for now, as chrome complains about trying to use webaudio
 			//without user input
 			sound = new Howl({
@@ -136,7 +146,7 @@ $(function() {
 			sound.play();
 		}
 		
-		$playIcon.css("color", playing ? "black" : "lime");
+		playIcon.css("color", playing ? "black" : "lime");
 		
 		playing = !playing;
 	}
@@ -146,9 +156,9 @@ $(function() {
 	$("#play-btn").click(handlePlay);
 	
 	
-	$("#fileInput").on("change", function(event) {
+	$("#fileInput").change(function(event) {
 		
-		console.log("file event fired")
+		console.log("file event fired");
 		
 		if (event.target.files.length == 0) {
 			return;
@@ -164,56 +174,63 @@ $(function() {
 			console.log("in event listener");
 			var data = reader.result;
 			
-			//console.log("data")
-			//console.log(data)
-			
-			// Create a Howler sound
 			var sound = new Howl({
 				src: data,
 				// always give file extension: this is optional but helps
-				format: file.name.split(".").pop().toLowerCase(),
-				
-				onend: function() {
-					//clean out input. this doesn't retrigger the event listener
-					$("#fileInput").val("");
-					this.unload();
-					console.log("done. unloaded");
-				}
+				format: file.name.split(".").pop().toLowerCase()
 			});
 			
+			cells[0].audio = sound;
 			
-			console.log('playing');
-			sound.play();
+			// console.log('playing');
+			// sound.play();
 		});
 		
 		console.log('reading');
 		reader.readAsDataURL(file);
 		
 	});
-
-	function handleKeyP(e){
-		var b = false;
-
-		for(var i = 0; i < gridHeight * gridWidth; i++){
-			if(keyPressButtons[i].className.includes("red")){
-				console.log(String.fromCharCode(e.code));
-				keyPressButtons[i].innerHTML = e.key;
-				keyPressButtons[i].classList.remove("red");
-				if(e.code in keyDict){
-					keyDict[e.code].innerHTML = "";
-				}
-				keyDict[e.code] = keyPressButtons[i];
-				b = true;
+	
+	//handle key presses on the page
+	//if we're waiting for a key, bind it to the waiting cell
+	//otherwise activate the bound cell, if there is one
+	$("html").keydown(function(event) {
+		
+		var key = event.key;
+		//console.log("keypress:", key);
+		
+		//if we're waiting for a new hotkey key
+		if (waitingCell !== null) {
+			
+			//if this cell already has a hotkey, remove the old mapping
+			if (waitingCell.hasHotkey()) {
+				delete hotkeys[waitingCell.hotkey];
+			}
+			
+			//if another cell is using this key,
+			//un-register that key from that cell
+			if (key in hotkeys) {
+				hotkeys[key].clearHotkey();
+			}
+			
+			//now, we add the new hotkey
+			waitingCell.setHotkey(key);
+			hotkeys[key] = waitingCell;
+			
+			//mark this cell as not waiting for a key anymore
+			waitingCell.keyButton.removeClass("red");
+			waitingCell = null;
+			
+		} else {
+			//otherwise it's a normal keypress that could trigger a cell
+			
+			if (key in hotkeys) {
+				//trigger the bound cell's code
+				hotkeys[key].run();
 			}
 		}
-
-		if(!b && e.code in keyDict){
-			keyDict[e.code].parentElement.click();
-		}
-	}
-
-	const keyQuery = document.querySelector('html');
-	keyQuery.onkeydown = handleKeyP;
+	});
+	
 	
 	console.log("ready");
 });
