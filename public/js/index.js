@@ -152,8 +152,8 @@ $(function() {
 	}
 	
 	
-	$("#record-btn").click(handleRecord);
-	$("#play-btn").click(handlePlay);
+	// $("#record-btn").click(handleRecord);
+	// $("#play-btn").click(handlePlay);
 	
 	
 	$("#fileInput").change(function(event) {

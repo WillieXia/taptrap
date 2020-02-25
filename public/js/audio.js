@@ -2,6 +2,7 @@ const recordAudio = () =>
   new Promise(async resolve => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream);
+    console.log(mediaRecorder.mimeType);
     const audioChunks = [];
 
     mediaRecorder.addEventListener("dataavailable", event => {
@@ -15,8 +16,11 @@ const recordAudio = () =>
         mediaRecorder.addEventListener("stop", () => {
           const audioBlob = new Blob(audioChunks);
           const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          const play = () => audio.play();
+          var h = new Howl({
+            src: audioUrl,
+            format: ['webm']
+          });
+          const play = () => h.play();
           resolve({ audioBlob, audioUrl, play });
         });
 
@@ -33,12 +37,12 @@ const recordStop = async () => {
   if (recorder) {
     audio = await recorder.stop();
     recorder = null;
-    document.querySelector("#record-button").textContent = "Record";
-    document.querySelector("#play-button").removeAttribute("disabled");
+    document.querySelector("#record-btn").textContent = "Record";
+    document.querySelector("#play-btn").removeAttribute("disabled");
   } else {
     recorder = await recordAudio();
     recorder.start();
-    document.querySelector("#record-button").textContent = "Stop";
+    document.querySelector("#record-btn").textContent = "Stop";
   }
 };
 
