@@ -109,6 +109,8 @@ export default class Cell {
 	//TODO this will probably do more stuff later
 	assign(sound) {
 		this.sound = sound;
+		//we need to check this, in case the mode was switched to loop before a sound was loaded
+		this.sound.loop(this.mode === modes.LOOP);
 	}
 	
 	//will be called when the cell is clicked on
