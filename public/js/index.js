@@ -33,7 +33,7 @@ $(function() {
 		//for whatever reason, clicking on buttons inside the cell
 		//also triggers this cell click handler
 		//so we only do stuff if we're clicking on the cell itself
-		if (!target.hasClass("btbtn")) {
+		if (!target.hasClass("cell")) {
 			return;
 		}
 		
@@ -91,22 +91,22 @@ $(function() {
 			//id is 0 to width*height-1
 			var id = i*GRID_HEIGHT + j;
 			
-			var cell = $("<div class='btbtn'></div>");
+			var cell = $("<div class='cell'></div>");
 			cell.click(eventWithId(handleGrid, id));
 			
 
-			var md_button = $("<button class='mdbtn'>Cut</button>");
-			md_button.click(eventWithId(changeMode, id));
+			var modeButton = $("<button class='cellButton'>Cut</button>");
+			modeButton.click(eventWithId(changeMode, id));
 			
-			var key_button = $("<button id='"+id+"' class='mdbtn keybtn'>&nbsp;</button>");
-			key_button.click(eventWithId(toggleKeyButton, id));
+			var keyButton = $("<button class='cellButton keyButton'>&nbsp;</button>");
+			keyButton.click(eventWithId(toggleKeyButton, id));
 			
 			
 			//append to array
 			//this makes the new Cell object have jquery "pointers" to the elements in the dom
-			cells.push(new Cell(id, cell, md_button, key_button));
+			cells.push(new Cell(id, cell, modeButton, keyButton));
 
-			cell.append(md_button, key_button);
+			cell.append(modeButton, keyButton);
 			row.append($("<td/>").html(cell));
 			
 		}
@@ -158,10 +158,10 @@ $(function() {
 	}
 	
 	
-	// $("#record-btn").click(handleRecord);
-	// $("#play-btn").click(handlePlay);
+	// $("#recordButton").click(handleRecord);
+	// $("#playButton").click(handlePlay);
 	
-	$("#record-btn").click(async function() {
+	$("#recordButton").click(async function() {
 		if (!Recorder.isRecording()) {
 			await Recorder.start();
 		} else {
