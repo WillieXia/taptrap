@@ -34,7 +34,7 @@ export default class Cell {
 		this.hotkey = null;
 		
 		//TODO
-		this.audio = null;
+		this.sound = null;
 		
 		//TODO does this need to hold more things?
 	}
@@ -63,6 +63,11 @@ export default class Cell {
 		this.keyButton.html("&nbsp;");
 	}
 	
+	//TODO this will probably do more stuff later
+	assign(sound) {
+		this.sound = sound;
+	}
+	
 	//will be called when the cell is clicked on
 	//"performs" its action
 	run() {
@@ -73,8 +78,8 @@ export default class Cell {
 
 		this.cellButton.toggleClass("red");
 		
-		if (this.audio !== null) {
-			this.audio.play();
+		if (this.sound !== null) {
+			this.sound.play();
 		}
 	}
 }

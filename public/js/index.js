@@ -21,9 +21,13 @@ $(function() {
 	var hotkeys = {};
 	
 	//list of Howl objects
-	var sounds = [];
+	//TODO is this needed?
+	//var sounds = [];
 	//sound right after uploading or recording
 	var pendingSound = null;
+	
+	//if true, currently assigning the pending sound to a cell
+	var assigning = false;
 	
 	//called when a cell is clicked
 	function handleGrid(event, id) {
@@ -39,7 +43,23 @@ $(function() {
 		
 		console.log(event);
 		
-		cells[id].run();
+		var cell = cells[id];
+		
+		if (assigning) {
+			
+			cell.assign(pendingSound);
+			
+			pendingSound = null;
+			assigning = false;
+			
+			//TODO could flesh this out, making buttons disabled at times, etc
+			$("#assign").text("assign");
+			$("#status").text("sound assigned to cell "+id);
+			
+		} else {
+			cell.run();
+		}
+		
 		
 	}
 
@@ -116,7 +136,7 @@ $(function() {
 	
 	
 	
-	var micIcon = $("#micIcon");
+	var recordIcon = $("#recordIcon");
 	var playIcon = $("#playIcon");
 	
 	var recording = false;
@@ -129,9 +149,10 @@ $(function() {
 		// loop: true
 	// });
 	
+	/*
 	function handleRecord(event) {
 		
-		micIcon.css("color", recording ? "black" : "red");
+		recordIcon.css("color", recording ? "black" : "red");
 		recording = !recording;
 	}
 
@@ -156,19 +177,27 @@ $(function() {
 		
 		playing = !playing;
 	}
+	*/
 	
 	
 	// $("#recordButton").click(handleRecord);
 	// $("#playButton").click(handlePlay);
 	
+	//TODO could probably remove the "Button" suffix on these
+	
 	$("#recordButton").click(async function() {
+		
 		if (!Recorder.isRecording()) {
 			await Recorder.start();
+			
 		} else {
-			var audio = await Recorder.stop();
-			//console.log(audio);
-			audio.play();
+			pendingSound = await Recorder.stop();
+			
+			$("#status").text("sound from recording loaded");
 		}
+		
+		//toggles between the two icons
+		recordIcon.toggleClass("fa-microphone fa-stop");
 		
 	});
 	
@@ -177,7 +206,7 @@ $(function() {
 		
 		console.log("file event fired");
 		
-		if (event.target.files.length == 0) {
+		if (event.target.files.length === 0) {
 			return;
 		}
 		
@@ -191,13 +220,17 @@ $(function() {
 			console.log("in event listener");
 			var data = reader.result;
 			
-			var sound = new Howl({
+			pendingSound = new Howl({
 				src: data,
-				// always give file extension: this is optional but helps
 				format: file.name.split(".").pop().toLowerCase()
 			});
 			
-			cells[0].audio = sound;
+			$("#status").text("sound from upload loaded");
+			
+			//clear the file chooser text
+			//$("#fileInput").val("");
+			
+			//cells[0].audio = sound;
 			
 			// console.log('playing');
 			// sound.play();
@@ -206,6 +239,22 @@ $(function() {
 		console.log('reading');
 		reader.readAsDataURL(file);
 		
+	});
+	
+	$("#pendingPlay").click(function() {
+		if (pendingSound !== null) {
+			console.log("playing");
+			pendingSound.play();
+		}
+	});
+	
+	$("#assign").click(function() {
+		if (assigning || pendingSound === null) {
+			return;
+		}
+		
+		assigning = true;
+		$("#assign").text("assigning...");
 	});
 	
 	//handle key presses on the page
