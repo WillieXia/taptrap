@@ -1,5 +1,5 @@
 import Cell from "./cell.js";
-import * as Recorder from "./audio.js";
+import * as Recorder from "./recorder.js";
 
 //dimensions of the cell grid
 const GRID_WIDTH = 5;
