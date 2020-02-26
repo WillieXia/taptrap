@@ -1,4 +1,5 @@
 import Cell from "./cell.js";
+import * as Recorder from "./audio.js";
 
 //dimensions of the cell grid
 const GRID_WIDTH = 5;
@@ -18,6 +19,11 @@ $(function() {
 	
 	//dictionary from keyboard key to cell object
 	var hotkeys = {};
+	
+	//list of Howl objects
+	var sounds = [];
+	//sound right after uploading or recording
+	var pendingSound = null;
 	
 	//called when a cell is clicked
 	function handleGrid(event, id) {
@@ -154,6 +160,17 @@ $(function() {
 	
 	// $("#record-btn").click(handleRecord);
 	// $("#play-btn").click(handlePlay);
+	
+	$("#record-btn").click(async function() {
+		if (!Recorder.isRecording()) {
+			await Recorder.start();
+		} else {
+			var audio = await Recorder.stop();
+			//console.log(audio);
+			audio.play();
+		}
+		
+	});
 	
 	
 	$("#fileInput").change(function(event) {

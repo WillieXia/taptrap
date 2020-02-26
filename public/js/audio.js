@@ -1,53 +1,57 @@
-const recordAudio = () =>
-	new Promise(async resolve => {
-		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-		const mediaRecorder = new MediaRecorder(stream);
-		console.log(mediaRecorder.mimeType);
-		const audioChunks = [];
+//sets up the audio for recording and returns start and stop functions
+const initRecorder = () => new Promise(async resolve => {
+	
+	const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+	const mediaRecorder = new MediaRecorder(stream);
+	console.log(mediaRecorder.mimeType);
+	
+	const audioChunks = [];
 
-		mediaRecorder.addEventListener("dataavailable", event => {
-			audioChunks.push(event.data);
-		});
-
-		const start = () => mediaRecorder.start();
-
-		const stop = () =>
-			new Promise(resolve => {
-				mediaRecorder.addEventListener("stop", () => {
-					const audioBlob = new Blob(audioChunks);
-					const audioUrl = URL.createObjectURL(audioBlob);
-					var h = new Howl({
-						src: audioUrl,
-						format: ['webm']
-					});
-					const play = () => h.play();
-					resolve({ audioBlob, audioUrl, play });
-				});
-
-				mediaRecorder.stop();
-			});
-
-		resolve({ start, stop });
+	mediaRecorder.addEventListener("dataavailable", event => {
+		audioChunks.push(event.data);
 	});
 
+	//start recording
+	const start = () => mediaRecorder.start();
+
+	//stop recording and return audio
+	const stop = () => new Promise(resolve => {
+		
+		mediaRecorder.addEventListener("stop", () => {
+			
+			const audioBlob = new Blob(audioChunks);
+			const audioUrl = URL.createObjectURL(audioBlob);
+			
+			const audio = new Howl({
+				src: audioUrl,
+				format: "webm"
+			});
+			
+			//return the sound
+			resolve(audio);
+		});
+
+		mediaRecorder.stop();
+	});
+
+	//return the start and stop functions
+	//this is the same as {start: start, stop: stop}
+	resolve({start, stop});
+});
+
 let recorder = null;
-let audio = null;
 
-const recordStop = async () => {
-	if (recorder) {
-		audio = await recorder.stop();
-		recorder = null;
-		document.querySelector("#record-btn").textContent = "Record";
-		document.querySelector("#play-btn").removeAttribute("disabled");
-	} else {
-		recorder = await recordAudio();
-		recorder.start();
-		document.querySelector("#record-btn").textContent = "Stop";
-	}
-};
+export async function start() {
+	recorder = await initRecorder();
+	recorder.start();
+}
 
-const playAudio = () => {
-	if (audio && typeof audio.play === "function") {
-		audio.play();
-	}
-};
+export async function stop() {
+	let audio = await recorder.stop();
+	recorder = null;
+	return audio;
+}
+
+export function isRecording() {
+	return recorder !== null;
+}
