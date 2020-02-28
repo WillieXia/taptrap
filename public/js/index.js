@@ -1,4 +1,5 @@
 import Cell from "./cell.js";
+import * as Recorder from "./recorder.js";
 
 //dimensions of the cell grid
 const GRID_WIDTH = 5;
@@ -19,6 +20,15 @@ $(function() {
 	//dictionary from keyboard key to cell object
 	var hotkeys = {};
 	
+	//list of Howl objects
+	//TODO is this needed?
+	//var sounds = [];
+	//sound right after uploading or recording
+	var pendingSound = null;
+	
+	//if true, currently assigning the pending sound to a cell
+	var assigning = false;
+	
 	//called when a cell is clicked
 	function handleGrid(event, id) {
 		
@@ -27,13 +37,29 @@ $(function() {
 		//for whatever reason, clicking on buttons inside the cell
 		//also triggers this cell click handler
 		//so we only do stuff if we're clicking on the cell itself
-		if (!target.hasClass("btbtn")) {
+		if (!target.hasClass("cell")) {
 			return;
 		}
 		
 		console.log(event);
 		
-		cells[id].run();
+		var cell = cells[id];
+		
+		if (assigning) {
+			
+			cell.assign(pendingSound);
+			
+			pendingSound = null;
+			assigning = false;
+			
+			//TODO could flesh this out, making buttons disabled at times, etc
+			$("#assign").text("assign");
+			$("#status").text("sound assigned to cell "+id);
+			
+		} else {
+			cell.run();
+		}
+		
 		
 	}
 
@@ -85,22 +111,22 @@ $(function() {
 			//id is 0 to width*height-1
 			var id = i*GRID_HEIGHT + j;
 			
-			var cell = $("<div class='btbtn'></div>");
+			var cell = $("<div class='cell'></div>");
 			cell.click(eventWithId(handleGrid, id));
 			
 
-			var md_button = $("<button class='mdbtn'>Cut</button>");
-			md_button.click(eventWithId(changeMode, id));
+			var modeButton = $("<button class='cellButton'>Cut</button>");
+			modeButton.click(eventWithId(changeMode, id));
 			
-			var key_button = $("<button id='"+id+"' class='mdbtn keybtn'>&nbsp;</button>");
-			key_button.click(eventWithId(toggleKeyButton, id));
+			var keyButton = $("<button class='cellButton keyButton'>&nbsp;</button>");
+			keyButton.click(eventWithId(toggleKeyButton, id));
 			
 			
 			//append to array
 			//this makes the new Cell object have jquery "pointers" to the elements in the dom
-			cells.push(new Cell(id, cell, md_button, key_button));
+			cells.push(new Cell(id, cell, modeButton, keyButton));
 
-			cell.append(md_button, key_button);
+			cell.append(modeButton, keyButton);
 			row.append($("<td/>").html(cell));
 			
 		}
@@ -110,7 +136,7 @@ $(function() {
 	
 	
 	
-	var micIcon = $("#micIcon");
+	var recordIcon = $("#recordIcon");
 	var playIcon = $("#playIcon");
 	
 	var recording = false;
@@ -123,9 +149,10 @@ $(function() {
 		// loop: true
 	// });
 	
+	/*
 	function handleRecord(event) {
 		
-		micIcon.css("color", recording ? "black" : "red");
+		recordIcon.css("color", recording ? "black" : "red");
 		recording = !recording;
 	}
 
@@ -150,17 +177,36 @@ $(function() {
 		
 		playing = !playing;
 	}
+	*/
 	
 	
-	$("#record-btn").click(handleRecord);
-	$("#play-btn").click(handlePlay);
+	// $("#recordButton").click(handleRecord);
+	// $("#playButton").click(handlePlay);
+	
+	//TODO could probably remove the "Button" suffix on these
+	
+	$("#recordButton").click(async function() {
+		
+		if (!Recorder.isRecording()) {
+			await Recorder.start();
+			
+		} else {
+			pendingSound = await Recorder.stop();
+			
+			$("#status").text("sound from recording loaded");
+		}
+		
+		//toggles between the two icons
+		recordIcon.toggleClass("fa-microphone fa-stop");
+		
+	});
 	
 	
 	$("#fileInput").change(function(event) {
 		
 		console.log("file event fired");
 		
-		if (event.target.files.length == 0) {
+		if (event.target.files.length === 0) {
 			return;
 		}
 		
@@ -174,13 +220,17 @@ $(function() {
 			console.log("in event listener");
 			var data = reader.result;
 			
-			var sound = new Howl({
+			pendingSound = new Howl({
 				src: data,
-				// always give file extension: this is optional but helps
 				format: file.name.split(".").pop().toLowerCase()
 			});
 			
-			cells[0].audio = sound;
+			$("#status").text("sound from upload loaded");
+			
+			//clear the file chooser text
+			//$("#fileInput").val("");
+			
+			//cells[0].audio = sound;
 			
 			// console.log('playing');
 			// sound.play();
@@ -189,6 +239,22 @@ $(function() {
 		console.log('reading');
 		reader.readAsDataURL(file);
 		
+	});
+	
+	$("#pendingPlay").click(function() {
+		if (pendingSound !== null) {
+			console.log("playing");
+			pendingSound.play();
+		}
+	});
+	
+	$("#assign").click(function() {
+		if (assigning || pendingSound === null) {
+			return;
+		}
+		
+		assigning = true;
+		$("#assign").text("assigning...");
 	});
 	
 	//handle key presses on the page

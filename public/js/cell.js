@@ -1,7 +1,45 @@
+//each mode is an object that holds
+//the mode name as text and a function
+//the function says what to do with the sound when you click the cell
+
+//TODO might make more sense for the play function to take a reference to the Cell
+//then it could e.g. change how the color toggles with different modes
 const modes = {
-	CUT: "Cut",
-	OVERLAP: "Overlap",
-	LOOP: "Loop"
+	CUT: {
+		text: "Cut",
+		play: function(sound) {
+			
+			//cut stops the current sound before restarting it
+			if (sound.playing()) {
+				sound.stop();
+			}
+			sound.play();
+		}
+	},
+	
+	OVERLAP: {
+		text: "Overlap",
+		play: function(sound) {
+			
+			//overlap plays the sound on top of the old version
+			//this is what happens by default with Howler
+			sound.play();
+		}
+	},
+	
+	LOOP: {
+		text: "Loop",
+		play: function(sound) {
+			
+			//loop pauses or resumes the sound loop
+			if (sound.playing()) {
+				sound.pause();
+			} else {
+				sound.play();
+			}
+			
+		}
+	}
 };
 
 function nextMode(mode) {
@@ -34,14 +72,19 @@ export default class Cell {
 		this.hotkey = null;
 		
 		//TODO
-		this.audio = null;
+		this.sound = null;
 		
 		//TODO does this need to hold more things?
 	}
 	
 	setMode(mode) {
 		this.mode = mode;
-		this.modeButton.text(mode);
+		this.modeButton.text(mode.text);
+		
+		//we need to make sure loop is on if we're in loop mode
+		if (this.sound !== null) {
+			this.sound.loop(this.mode === modes.LOOP);
+		}
 	}
 	
 	//changes to the next mode
@@ -63,6 +106,17 @@ export default class Cell {
 		this.keyButton.html("&nbsp;");
 	}
 	
+	assign(sound) {
+		//if there was an existing sound, remove it
+		if (this.sound !== null) {
+			this.sound.unload();
+		}
+		
+		this.sound = sound;
+		//we need to check this, in case the mode was switched to loop before a sound was loaded
+		this.sound.loop(this.mode === modes.LOOP);
+	}
+	
 	//will be called when the cell is clicked on
 	//"performs" its action
 	run() {
@@ -73,8 +127,8 @@ export default class Cell {
 
 		this.cellButton.toggleClass("red");
 		
-		if (this.audio !== null) {
-			this.audio.play();
+		if (this.sound !== null) {
+			this.mode.play(this.sound);
 		}
 	}
 }
