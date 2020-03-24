@@ -5,6 +5,13 @@ import * as Recorder from "./recorder.js";
 const GRID_WIDTH = 5;
 const GRID_HEIGHT = 5;
 
+const BPM = 120;
+//ms per beat
+const BEAT_MULTIPLIER = 1/(BPM/60/1000);
+
+
+
+
 //called on page load
 $(function() {
 	
@@ -183,12 +190,41 @@ $(function() {
 	// $("#recordButton").click(handleRecord);
 	// $("#playButton").click(handlePlay);
 	
+	//id of the timeout that clicks the stop button
+	var timeoutId = null;
+
+	function beat(x){
+		return new Promise(resolve => {
+			setTimeout(() => {
+				resolve(x);
+			}, BEAT_MULTIPLIER);
+		});
+	}
+	
 	//TODO could probably remove the "Button" suffix on these
 	
 	$("#recordButton").click(async function() {
 		
+		if (timeoutId !== null) {
+			clearTimeout(timeoutId);
+			timeoutId = null;
+		}
+		
 		if (!Recorder.isRecording()) {
+
+			for (var x = 4; x > 0; x--) {
+				$("#countdown").text(x);
+				var t = await beat(x);
+			}
+
+			$("#countdown").text("0");
+
 			await Recorder.start();
+			
+			timeoutId = setTimeout(
+				function() {$("#recordButton").click();},
+				parseInt($("#recordTime").val()*BEAT_MULTIPLIER)
+			);
 			
 		} else {
 			pendingSound = await Recorder.stop();
