@@ -5,6 +5,13 @@ import * as Recorder from "./recorder.js";
 const GRID_WIDTH = 5;
 const GRID_HEIGHT = 5;
 
+const BPM = 120;
+//ms per beat
+const BEAT_MULTIPLIER = 1/(BPM/60/1000);
+
+
+
+
 //called on page load
 $(function() {
 	
