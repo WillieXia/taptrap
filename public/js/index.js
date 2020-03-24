@@ -190,12 +190,27 @@ $(function() {
 	// $("#recordButton").click(handleRecord);
 	// $("#playButton").click(handlePlay);
 	
+	//id of the timeout that clicks the stop button
+	var timeoutId = null;
+	
 	//TODO could probably remove the "Button" suffix on these
 	
 	$("#recordButton").click(async function() {
 		
+		if (timeoutId !== null) {
+			clearTimeout(timeoutId);
+			timeoutId = null;
+		}
+		
 		if (!Recorder.isRecording()) {
 			await Recorder.start();
+			
+			//$("#recordButton").prop("disabled", true);
+			
+			timeoutId = setTimeout(
+				function() {$("#recordButton").click();},
+				parseInt($("#recordTime").val()*BEAT_MULTIPLIER)
+			);
 			
 		} else {
 			pendingSound = await Recorder.stop();
