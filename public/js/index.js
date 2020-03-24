@@ -192,8 +192,6 @@ $(function() {
 	
 	//id of the timeout that clicks the stop button
 	var timeoutId = null;
-	
-	//TODO could probably remove the "Button" suffix on these
 
 	function beat(x){
 		return new Promise(resolve => {
@@ -202,6 +200,8 @@ $(function() {
 			}, BEAT_MULTIPLIER);
 		});
 	}
+	
+	//TODO could probably remove the "Button" suffix on these
 	
 	$("#recordButton").click(async function() {
 		
@@ -212,16 +212,14 @@ $(function() {
 		
 		if (!Recorder.isRecording()) {
 
-			for(var x = 4; x > 0; x--){
-				document.getElementById("countdown").innerText = x;
+			for (var x = 4; x > 0; x--) {
+				$("#countdown").text(x);
 				var t = await beat(x);
 			}
 
-			document.getElementById("countdown").innerText = "";
+			$("#countdown").text("0");
 
 			await Recorder.start();
-			
-			//$("#recordButton").prop("disabled", true);
 			
 			timeoutId = setTimeout(
 				function() {$("#recordButton").click();},
