@@ -184,10 +184,26 @@ $(function() {
 	// $("#playButton").click(handlePlay);
 	
 	//TODO could probably remove the "Button" suffix on these
+
+	function beat(x){
+		return new Promise(resolve => {
+			setTimeout(() => {
+				resolve(x);
+			}, BEAT_MULTIPLIER);
+		});
+	}
 	
 	$("#recordButton").click(async function() {
 		
 		if (!Recorder.isRecording()) {
+
+			for(var x = 4; x > 0; x--){
+				document.getElementById("countdown").innerText = x;
+				var t = await beat(x);
+			}
+
+			document.getElementById("countdown").innerText = "";
+
 			await Recorder.start();
 			
 		} else {
