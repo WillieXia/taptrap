@@ -11,7 +11,6 @@ const BEAT_MULTIPLIER = 1/(BPM/60/1000);
 
 
 
-
 //called on page load
 $(function() {
 	
