@@ -211,12 +211,14 @@ $(function() {
 		
 		if (!Recorder.isRecording()) {
 
+			var tempst = document.getElementById("recordButton").innerHTML;
+
 			for (var x = 4; x > 0; x--) {
-				$("#countdown").text(x);
+				$("#recordButton").text(x);
 				var t = await beat(x);
 			}
 
-			$("#countdown").text("0");
+			document.getElementById("recordButton").innerHTML = tempst;
 
 			await Recorder.start();
 			
@@ -232,7 +234,7 @@ $(function() {
 		}
 		
 		//toggles between the two icons
-		recordIcon.toggleClass("fa-microphone fa-stop");
+		$("#recordIcon").toggleClass("fa-microphone fa-stop");
 		
 	});
 	
