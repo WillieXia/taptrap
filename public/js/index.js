@@ -189,7 +189,8 @@ $(function() {
 	// $("#recordButton").click(handleRecord);
 	// $("#playButton").click(handlePlay);
 	
-	//TODO could probably remove the "Button" suffix on these
+	//id of the timeout that clicks the stop button
+	var timeoutId = null;
 
 	function beat(x){
 		return new Promise(resolve => {
@@ -199,18 +200,30 @@ $(function() {
 		});
 	}
 	
+	//TODO could probably remove the "Button" suffix on these
+	
 	$("#recordButton").click(async function() {
+		
+		if (timeoutId !== null) {
+			clearTimeout(timeoutId);
+			timeoutId = null;
+		}
 		
 		if (!Recorder.isRecording()) {
 
-			for(var x = 4; x > 0; x--){
-				document.getElementById("countdown").innerText = x;
+			for (var x = 4; x > 0; x--) {
+				$("#countdown").text(x);
 				var t = await beat(x);
 			}
 
-			document.getElementById("countdown").innerText = "";
+			$("#countdown").text("0");
 
 			await Recorder.start();
+			
+			timeoutId = setTimeout(
+				function() {$("#recordButton").click();},
+				parseInt($("#recordTime").val()*BEAT_MULTIPLIER)
+			);
 			
 		} else {
 			pendingSound = await Recorder.stop();
